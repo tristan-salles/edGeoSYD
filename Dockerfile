@@ -21,15 +21,12 @@ RUN apt-get update -qq && \
 #ADD --chown=jovyan:jovyan $MODULE_DIR $MODULE_DIR
 #RUN   cd $MODULE_DIR && python3 -m pip install --no-cache-dir --no-deps --upgrade .
 
+ENV MODULE_DIR="Notebooks"
+#RUN mkdir -p /home/jovyan/edcom/
+ADD --chown=jovyan:jovyan $MODULE_DIR $MODULE_DIR
+#ADD  --chown=jovyan:jovyan Notebooks/0-StartHere.ipynb Notebooks/0-StartHere.ipynb
 
-RUN mkdir -p /home/jovyan/edcom/
-#ipython3 -c 'import bioLEC; bioLEC.documentation.install_documentation(path="Notebooks")'
-ADD  --chown=jovyan:jovyan Notebooks/0-StartHere.ipynb Notebooks/0-StartHere.ipynb
-
-
-RUN python3 -m pip install --no-cache-dir --upgrade networkx seaborn \
-   jupyterhub \
-   git+https://github.com/OKaluza/LavaVu.git@afa8cd24e6dae7ffbacf9735db8e1affd85fd3df
+RUN python3 -m pip install --no-cache-dir --upgrade networkx seaborn jupyterhub
 
 RUN mkdir -p /usr/local/files && chown -R jovyan:jovyan /usr/local/files
 ADD --chown=jovyan:jovyan Docker/scripts  /usr/local/files
@@ -43,10 +40,6 @@ USER jovyan
 
 # Non standard as the files come from the packages
 ##################################################
-
-
-## These are supplied by the build script
-## build-dockerfile.sh
 
 ARG IMAGENAME_ARG
 ARG PROJ_NAME_ARG=edcom
@@ -67,20 +60,11 @@ ENV NB_DIR=$NB_DIR_ARG
 ENV START_NB=$START_NB_ARG
 
 
-## NOW INSTALL NOTEBOOKS
-
-# (This is not standard - nothing to do here )
-
-## The notebooks (and other files we are serving up)
-
-
 # Trust all notebooks
 RUN find -name \*.ipynb  -print0 | xargs -0 jupyter trust
 
 # expose notebook port server port
 EXPOSE $NB_PORT
-
-#VOLUME /home/jovyan/$NB_DIR/share
 
 # note we use xvfb which to mimic the X display for lavavu
 ENTRYPOINT ["/usr/local/bin/xvfbrun.sh"]
