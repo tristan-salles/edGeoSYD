@@ -17,16 +17,10 @@ RUN apt-get update -qq && \
 
 ### Notebooks
 
-#ENV MODULE_DIR="src"
-#ADD --chown=jovyan:jovyan $MODULE_DIR $MODULE_DIR
-#RUN   cd $MODULE_DIR && python3 -m pip install --no-cache-dir --no-deps --upgrade .
-
 ENV MODULE_DIR="Notebooks"
-#RUN mkdir -p /home/jovyan/edcom/
 ADD --chown=jovyan:jovyan $MODULE_DIR $MODULE_DIR
-#ADD  --chown=jovyan:jovyan Notebooks/0-StartHere.ipynb Notebooks/0-StartHere.ipynb
 
-RUN python3 -m pip install --no-cache-dir --upgrade networkx seaborn jupyterhub
+RUN python3 -m pip install --no-cache-dir --upgrade networkx seaborn openpyxl jupyterhub
 
 RUN mkdir -p /usr/local/files && chown -R jovyan:jovyan /usr/local/files
 ADD --chown=jovyan:jovyan Docker/scripts  /usr/local/files
@@ -58,7 +52,6 @@ ENV NB_PORT=$NB_PORT_ARG
 ENV NB_PASSWD=$NB_PASSWD_ARG
 ENV NB_DIR=$NB_DIR_ARG
 ENV START_NB=$START_NB_ARG
-
 
 # Trust all notebooks
 RUN find -name \*.ipynb  -print0 | xargs -0 jupyter trust
